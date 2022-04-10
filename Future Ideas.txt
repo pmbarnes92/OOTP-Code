@@ -1,0 +1,21 @@
+-Update UBR to def Arm Method
+-Improve UI such as choosing folders, having choices for plots similar to fracture fatigue
+-Check over code for mistakes. Review run values etc.
+-L1 normalization for all or some fits (fielding fits seem like they could use it)
+-Should our primary fit be arm at third base, followed by range?
+-Calculate Average Using BABIP calculator. Remove contact fit except to find babip. I believe gap should be based on hits and not AB's...?
+
+
+
+Secondary
+-Could make it so double/triple/single percents aren't hard coded in DefPred.m
+
+
+Notes
+-BABIP has a break at 100 (Points in editor with rating on left and resulting contact on right, all other
+ratings left at 100)
+POW Points (0,90) and (200,144) 
+AvoidK Points (20,73) and (200,144), below 20 avoid K falls off HARD (0,19)
+BABIP Points (0,42) and (200,180)
+-Ratings add if both going above or both going below 100. Otherwise must get to 100 to use those values
+-When AVOID K RATING = 20 POW Points, 
