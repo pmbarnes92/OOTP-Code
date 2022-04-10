@@ -2,31 +2,59 @@
 
 function Output = HitCalcs (Output, Range, Hitrats, HitStats, RV, xvec, iPlot, PlotText)
 
-%% Contact
+%% BABIP Calc
+iround = true;
+BABIPRat = CalcBABIP(Hitrats(:,1), Hitrats(:,3), Hitrats(:,5), iround);
 Hits = zeros(length(RV),1);
-AB = Hits;
+BIP = Hits;
 for i = 1:length(RV)
-    ind = Hitrats(:,1) == RV(i);
-    Hits(i) = sum(sum(HitStats(ind,4:7)));
-    AB(i) = sum(HitStats(ind,3)); %AB
+    ind = BABIPRat == RV(i);
+    Hits(i) = sum(sum(HitStats(ind,4:6))); %Hits Except HR's
+    BIP(i) = sum(HitStats(ind,3)) - sum(sum(HitStats(ind,[7, 15]))); %AB - HR - SO
 end
-Avg = Hits./AB;
-valid = ~isnan(Avg);
-AvgFit1 = lscov(xvec(valid,:),Avg(valid),AB(valid));
-AvgFit2 = lscov(xvec(valid,:),Avg(valid),ones(sum(valid),1));
-Output(Range(1),:) = AvgFit1.';
+BABIP = Hits./BIP;
+valid = ~isnan(BABIP);
+BABIPFit1 = lscov(xvec(valid,:),BABIP(valid),BIP(valid));
+BABIPFit2 = lscov(xvec(valid,:),BABIP(valid),ones(sum(valid),1));
+Output(Range(1),:) = BABIPFit1.';
 
 if (iPlot(1))
   figure;
-  scatter(RV,Avg)
-  xlabel('Contact Rating')
-  ylabel('Average')
-  title(['Average vs Contact Rating (' PlotText ')'])
+  scatter(RV,BABIP)
+  xlabel('BABIP Rating')
+  ylabel('BABIP Stat')
+  title(['BABIP Stat vs BABIP Rating (' PlotText ')'])
   hold on;
-  plot(RV,AvgFit1(2)+RV.*AvgFit1(1));
-  plot(RV,AvgFit2(2)+RV.*AvgFit2(1));
+  plot(RV,BABIPFit1(2)+RV.*BABIPFit1(1));
+  plot(RV,BABIPFit2(2)+RV.*BABIPFit2(1));
   legend('Stat','WeightFit','RegFit','Location','NorthWest')
 endif
+
+##%% Contact
+##Hits = zeros(length(RV),1);
+##AB = Hits;
+##for i = 1:length(RV)
+##    ind = Hitrats(:,1) == RV(i);
+##    Hits(i) = sum(sum(HitStats(ind,4:7)));
+##    AB(i) = sum(HitStats(ind,3)); %AB
+##end
+##Avg = Hits./AB;
+##valid = ~isnan(Avg);
+##AvgFit1 = lscov(xvec(valid,:),Avg(valid),AB(valid));
+##AvgFit2 = lscov(xvec(valid,:),Avg(valid),ones(sum(valid),1));
+##Output(Range(1),:) = AvgFit1.';
+##
+##if (iPlot(1))
+##  figure;
+##  scatter(RV,Avg)
+##  xlabel('Contact Rating')
+##  ylabel('Average')
+##  title(['Average vs Contact Rating (' PlotText ')'])
+##  hold on;
+##  plot(RV,AvgFit1(2)+RV.*AvgFit1(1));
+##  plot(RV,AvgFit2(2)+RV.*AvgFit2(1));
+##  legend('Stat','WeightFit','RegFit','Location','NorthWest')
+##endif
 
 %% Power (Set to index 3)
 HR = zeros(length(RV),1);
@@ -56,15 +84,15 @@ endif
 
 %% Gap Power (Set to Index 2)
 Gap = zeros(length(RV),1);
-AB = Gap;
+H = Gap;
 for i = 1:length(RV)
     ind = Hitrats(:,2) == RV(i);
     Gap(i) = sum(sum(HitStats(ind,5:6))); %Doubles and Triples
-    AB(i) = sum(HitStats(ind,3)); %AB
+    H(i) = sum(sum(HitStats(ind,4:6))); %Hits - HR (Switch as of 4-10-22)
 end
-GapRate = Gap./AB;
+GapRate = Gap./H;
 valid = ~isnan(GapRate);
-GapFit1 = lscov(xvec(valid,:),GapRate(valid),AB(valid));
+GapFit1 = lscov(xvec(valid,:),GapRate(valid),H(valid));
 GapFit2 = lscov(xvec(valid,:),GapRate(valid),ones(sum(valid),1));
 Output(Range(2),:) = GapFit1.';
 
@@ -72,8 +100,8 @@ if (iPlot(3))
   figure;
   scatter(RV,GapRate)
   xlabel('Gap Rating')
-  ylabel('GapRate')
-  title(['GapRate vs Gap Rating (' PlotText ')'])
+  ylabel('GapRate per Hit')
+  title(['GapRate per Hit vs Gap Rating (' PlotText ')'])
   hold on;
   plot(RV,GapFit1(2)+RV.*GapFit1(1));
   plot(RV,GapFit2(2)+RV.*GapFit2(1));

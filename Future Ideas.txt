@@ -3,7 +3,6 @@
 -Check over code for mistakes. Review run values etc.
 -L1 normalization for all or some fits (fielding fits seem like they could use it)
 -Should our primary fit be arm at third base, followed by range?
--Calculate Average Using BABIP calculator. Remove contact fit except to find babip. I believe gap should be based on hits and not AB's...?
 
 
 

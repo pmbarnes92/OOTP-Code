@@ -37,7 +37,7 @@ Output = zeros(27,2); %BatterOutput
 
 %%HitCalcs
 iPlot = ones(4,5); %Default to not plot. Manually set values to plot below
-%iPlot(:,2) = 1; %first column adjusts split, second column adjusts variable (Cont, Pow, Gap, Eye, K)
+%iPlot(:,2) = 1; %first column adjusts split, second column adjusts variable (BABIP, Pow, Gap, Eye, K)
 Output = HitCalcs(Output, 1:5, Rat(Rind, 11:15), StatR(Rind, 1:15), RV, xvec, iPlot(1,:), 'RvR'); %Right (Bat) v Right (Pit)
 Output = HitCalcs(Output, 6:10, Rat(Rind|Sind, 6:10), StatL(Rind|Sind, 1:15), RV, xvec, iPlot(2,:), 'RvL'); %Right (Bat) v Left (Pit)
 Output = HitCalcs(Output, 11:15, Rat(Lind|Sind, 11:15), StatR(Lind|Sind, 1:15), RV, xvec, iPlot(3,:), 'LvR'); %Left (Bat) v Right (Pit)
