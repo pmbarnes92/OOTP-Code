@@ -1,7 +1,7 @@
 function Output = BatterPred (Output, BatRat, Bind, BatEqns, Range, RunRat, UBRFit, OBAData, PA)
 
 iround = false;
-BABIPRat = CalcBABIP(BatRat(:,1), BatRat(:,3), BatRat(:,5), iround); %Calc BABIP Rat
+BABIPRat = CalcBABIP(BatRat(:,1), BatRat(:,3), BatRat(:,5), 5, iround); %Calc BABIP Rat
 
 StatCalc = zeros(size(BatRat,1),length(Range));
 for i = 1:length(Range)

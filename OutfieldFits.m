@@ -1,42 +1,47 @@
 %% Fits shown in graphs are multiplied by chances per out played to be used for evaluating players later
 function [Fits, AvgRatings] = OutfieldFits(Data, RV, xvec, Pos, iPlot, OutfileLoc, OutfileName, Sheet)
 
-Fitsorig = zeros(7,2); %Store Fits and average plays per out
-Outs = mod(Data(:,20),1)*10 + floor(Data(:,20))*3;%Convert IP to Outs
+Fitsorig = zeros(3,2); %Store Fits and average plays per out
+Outs = mod(Data(:,31),1)*10 + floor(Data(:,31))*3;%Convert IP to Outs
 Playtype = {'Routine','Likely','Even','Unlikely','Remote'};
 
 AvgRatings = zeros(1,5);
-AvgRatings(1:3) = sum(Data(:,5:7).*(Outs*ones(1,3)))/sum(Outs);
+AvgRatings(1:3) = sum(Data(:,7:9).*(Outs*ones(1,3)))/sum(Outs);
 
 %% BIZ Analysis
-for j = 1:5
-  BIZmade = zeros(length(RV),1);
-  BIZchances = BIZmade;
-  col1 = 23 + 3*(j-1);
-  col2 = col1-1;
-  for i = 1:length(RV)
-      ind = Data(:,5) == RV(i);
-      BIZmade(i) = sum(Data(ind,col1)); %Plays Made
-      BIZchances(i) = sum(Data(ind,col2)); %Plays in zone
-  end
-  Rangepct = BIZmade./BIZchances;
-  valid = ~isnan(Rangepct);
-  BIZFit1 = lscov(xvec(valid,:),Rangepct(valid),BIZchances(valid));
-  BIZFit2 = lscov(xvec(valid,:),Rangepct(valid),ones(sum(valid),1));
-  Fitsorig(j,:) = BIZFit1.';
+BIZmadepOut = zeros(length(RV),1);
+BIZChances = BIZmadepOut; %Used to weight fit
+col1 = 36:3:48;
+col2 = col1-1;
+for i = 1:length(RV)
+    ind = Data(:,7) == RV(i);
+    for j = 1:5
+      PlayspOut = sum(Data(:,col2(j)))/sum(Outs); 
+      if (j == 1)
+        PlaysMade = sum(Data(ind,col1(j))) + sum(Data(ind,24)); %Don't include errors in fit (Add back to routine balls).
+      else
+        PlaysMade = sum(Data(ind,col1(j))); %Non Routine Balls do a straight fit
+      endif
+      BIZmadepOut(i) = BIZmadepOut(i) + PlayspOut*PlaysMade/sum(Data(ind,col2(j))); %Plays Made
+      BIZChances(i) = BIZChances(i) + sum(Data(ind,col2(j))); %Play Chances for weighting fit
+    endfor
+end
+valid = ~isnan(BIZmadepOut);
+BIZFit1 = lscov(xvec(valid,:),BIZmadepOut(valid),BIZChances(valid));
+BIZFit2 = lscov(xvec(valid,:),BIZmadepOut(valid),ones(sum(valid),1));
+Fitsorig(1,:) = BIZFit1.';
 
-  if (iPlot(1))
-    figure;
-    scatter(RV,Rangepct)
-    xlabel('Outfield Range Rating')
-    ylabel('Plays Made Percentage')
-    title([Pos, ': Pct of ', Playtype{j},  ' vs Range'])
-    hold on;
-    plot(RV,BIZFit1(2)+RV.*BIZFit1(1));
-    plot(RV,BIZFit2(2)+RV.*BIZFit2(1));
-    legend('Stat','WeightFit','RegFit','Location','NorthWest')
-  endif
-endfor
+if (iPlot(1))
+  figure;
+  scatter(RV,BIZmadepOut)
+  xlabel('Outfield Range Rating')
+  ylabel('Total Plays Made Per Out')
+  title([Pos, ': Total Plays made per Out vs Range'])
+  hold on;
+  plot(RV,BIZFit1(2)+RV.*BIZFit1(1));
+  plot(RV,BIZFit2(2)+RV.*BIZFit2(1));
+  legend('Stat','WeightFit','RegFit','Location','NorthWest')
+endif
 
 
 ##
@@ -71,15 +76,15 @@ endfor
 A = zeros(length(RV),1);
 TCa = A;
 for i = 1:length(RV)
-    ind = Data(:,6) == RV(i);
-    A(i) = sum(Data(ind,13)); %Assists
-    TCa(i) = sum(Data(ind,12))-sum(Data(ind,13)); %Total Chances - Asssist
+    ind = Data(:,9) == RV(i);
+    A(i) = sum(Data(ind,22)); %Assists
+    TCa(i) = sum(Data(ind,21))-sum(Data(ind,22)); %Total Chances - Asssist
 end
 ApTC = A./TCa;
 valid = ~isnan(ApTC);
 AFit1 = lscov(xvec(valid,:),ApTC(valid),TCa(valid));
 AFit2 = lscov(xvec(valid,:),ApTC(valid),ones(sum(valid),1));
-Fitsorig(6,:) = AFit1.';
+Fitsorig(2,:) = AFit1.';
 
 if (iPlot(2))
   figure;
@@ -93,19 +98,45 @@ if (iPlot(2))
   legend('Stat','WeightFit','RegFit','Location','NorthWest')
 endif
 
+%% Arm Runs Stat Fit (New to ootp23)
+##Arm = zeros(length(RV),1);
+##TCa = Arm;
+##for i = 1:length(RV)
+##    ind = Data(:,9) == RV(i);
+##    Arm(i) = sum(Data(ind,51)); %Arm Runs
+##    TCa(i) = sum(Data(ind,21))-sum(Data(ind,22)); %Total Chances - Asssist
+##end
+##ApTC = Arm./TCa;
+##valid = ~isnan(ApTC);
+##AFit1 = lscov(xvec(valid,:),ApTC(valid),TCa(valid));
+##AFit2 = lscov(xvec(valid,:),ApTC(valid),ones(sum(valid),1));
+##Fitsorig(2,:) = AFit1.';
+##
+##if (iPlot(2))
+##  figure;
+##  scatter(RV,ApTC)
+##  xlabel('Outfield Arm Rating')
+##  ylabel('Arm Runs per Total Chance')
+##  title([Pos, ': Arm Runs per TC vs Arm'])
+##  hold on;
+##  plot(RV,AFit1(2)+RV.*AFit1(1));
+##  plot(RV,AFit2(2)+RV.*AFit2(1));
+##  legend('Stat','WeightFit','RegFit','Location','NorthWest')
+##endif
+
 %% Error Fit
 E = zeros(length(RV),1);
 TCe = E;
 for i = 1:length(RV)
-    ind = Data(:,7) == RV(i);
-    E(i) = sum(Data(ind,15)); %Errors
-    TCe(i) = sum(Data(ind,12))-sum(Data(ind,13)); %Total Chances - Asssist
+    ind = Data(:,8) == RV(i);
+    E(i) = sum(Data(ind,24)); %Errors
+    TCe(i) = sum(Data(ind,21))-sum(Data(ind,22)); %Total Chances - Asssist
 end
 EpTC = E./TCe;
 valid = ~isnan(EpTC);
 EFit1 = lscov(xvec(valid,:),EpTC(valid),TCe(valid));
 EFit2 = lscov(xvec(valid,:),EpTC(valid),ones(sum(valid),1));
-Fitsorig(7,:) = EFit1.';
+Fitsorig(3,:) = EFit1.';
 
 if (iPlot(3))
   figure;
@@ -121,17 +152,12 @@ endif
 
 %Scale fits based on plays in zone per out played.
 Fits = Fitsorig;
-Fits(1,:) = Fitsorig(1,:)*sum(Data(:,22))/sum(Outs); %Routine
-Fits(2,:) = Fitsorig(2,:)*sum(Data(:,25))/sum(Outs); %Likely
-Fits(3,:) = Fitsorig(3,:)*sum(Data(:,28))/sum(Outs); %Even
-Fits(4,:) = Fitsorig(4,:)*sum(Data(:,31))/sum(Outs); %Unlikely
-Fits(5,:) = Fitsorig(5,:)*sum(Data(:,34))/sum(Outs); %Remote
-Fits(6,:) = Fitsorig(6,:)*(sum(Data(:,12))-sum(Data(:,13)))/sum(Outs); %Total chances - Assists
+Fits(2,:) = Fitsorig(2,:)*(sum(Data(:,21))-sum(Data(:,22)))/sum(Outs); %Total chances - Assists
 
 Fits(Fits(:,1) < 0,1) = 0; %Make sure no fits provide negative slopes
 
-Fits(7,:) = Fitsorig(7,:)*(sum(Data(:,12))-sum(Data(:,13)))/sum(Outs); %Total chances - Assists
-Fits(7,1) = min(0,Fits(7,1)); %Error fit must be negative
+Fits(3,:) = Fitsorig(3,:)*(sum(Data(:,21))-sum(Data(:,22)))/sum(Outs); %Total chances - Assists
+Fits(3,1) = min(0,Fits(3,1)); %Error fit must be negative
 
 xlswrite(fullfile(OutfileLoc, OutfileName), Fits,Sheet); %Write Results to excel file
 

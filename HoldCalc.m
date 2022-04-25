@@ -7,7 +7,7 @@ SBAttempt = zeros(length(RV),1);
 Outs = SBAttempt;
 for i = 1:length(RV)
     ind = HoldRat == RV(i); %Hold Rating
-    SBAttempt(i) = sum(sum(PStat(ind,25:26)));
+    SBAttempt(i) = sum(sum(PStat(ind,20:21)));
     Outs(i) = sum(OutsTot(ind)); %Outs Pitched
 end
 SBrate = SBAttempt./Outs;
@@ -34,8 +34,8 @@ endif
 RTO = zeros(length(RV),1);
 for i = 1:length(RV)
     ind = HoldRat == RV(i); %Hold Rating
-    RTO(i) = sum(PStat(ind,26)); %RTO
-    SBAttempt(i) = sum(sum(PStat(ind,25:26))); %SB Attempts
+    RTO(i) = sum(PStat(ind,21)); %RTO
+    SBAttempt(i) = sum(sum(PStat(ind,20:21))); %SB Attempts
 end
 RTOPct = RTO./SBAttempt;
 valid = ~isnan(RTOPct) & SBAttempt > 0;

@@ -4,7 +4,7 @@ function NoOutput = WritePredOutput (file, sheet, Data, ColHead, RowHead)
   xlswrite(file,Data,sheet,'D2');
   xlswrite(file,ColHead,sheet,'A1');
   xlswrite(file,RowHead,sheet,'A2');
-  pause(1);
+  pause(1.5);
   NoOutput = 1;
 
 endfunction

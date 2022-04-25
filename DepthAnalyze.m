@@ -12,7 +12,7 @@ for k = 1:size(Data,2)
   WARList(:,k) = Sort(1:Listsize);
 endfor
 
-Results = zeros(10,2*numlineup); %Store lineup results and war
+Results = -99*ones(10,2*numlineup); %Store lineup results and war
 ResStored = ones(9,1);
 
 for a=1:Listsize

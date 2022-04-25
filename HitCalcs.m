@@ -1,10 +1,10 @@
 %Calculate Hitter Regressions
 
-function Output = HitCalcs (Output, Range, Hitrats, HitStats, RV, xvec, iPlot, PlotText)
+function Output = HitCalcs (Output, Range, Hitrats, HitStats, RV, xvec, divisor, iPlot, PlotText)
 
 %% BABIP Calc
 iround = true;
-BABIPRat = CalcBABIP(Hitrats(:,1), Hitrats(:,3), Hitrats(:,5), iround);
+BABIPRat = CalcBABIP(Hitrats(:,1), Hitrats(:,3), Hitrats(:,5), divisor, iround);
 Hits = zeros(length(RV),1);
 BIP = Hits;
 for i = 1:length(RV)

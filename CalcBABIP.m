@@ -1,5 +1,5 @@
 %Currently programmed for 20-80 rating scale. Could be modified to fit other scales. SEE SGT Mushroom sheet for contstants used. They should be the same constants for other ratings, but would need to replace 50 etc.
-function BABIPRat = CalcBABIP (Con, Pow, AvK, iround)
+function BABIPRat = CalcBABIP (Con, Pow, AvK, divisor, iround)
   BABIPnum = Con - 50*ones(size(Con,1),1); %Numerator for Babip Calc (Need to sum to Contact Rating)
   Kadj = zeros(size(Con,1),1);
   Padj = Kadj;
@@ -57,7 +57,7 @@ function BABIPRat = CalcBABIP (Con, Pow, AvK, iround)
   BABIPRat(case3 & BAB2) = BABIPnum(case3 & BAB2)/1.3;
   
   if (iround) %Round to nearest 5?
-    BABIPRat = 5*round((BABIPRat + 50)/5);
+    BABIPRat = divisor*round((BABIPRat + 50)/divisor);
   else
     BABIPRat = BABIPRat + 50;
   endif

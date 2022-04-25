@@ -1,8 +1,18 @@
 -Update UBR to def Arm Method
--Improve UI such as choosing folders, having choices for plots similar to fracture fatigue
+-Improve UI such as choosing folders, having choices for plots and what to run similar to fracture fatigue
 -Check over code for mistakes. Review run values etc.
 -L1 normalization for all or some fits (fielding fits seem like they could use it)
--Should our primary fit be arm at third base, followed by range?
+-Maybe keep working on fielding calcs. They are sus with the range/arm stuff. Are we accounting for intangibles like outfielders  turning doubles into singles? HOW?
+-Will need to add BABIP for perfect team.
+-Add ballpark scaling factors for Left and Right handed batters.
+
+Fit Issues
+-Investigate Movement
+-DP Defense
+-SB piecewise for high speed ratings
+-1b height
+-Keep thinking about how to do arm
+-Incorporate GB/FB ratings for pitchers (and batters?)? Might be too much work. Should affect double plays for pitchers but FB may reduce BABIP for pitchers?
 
 
 

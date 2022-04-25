@@ -57,7 +57,7 @@ SBAttempt = zeros(length(RV),1);
 TimesOB = SBAttempt;
 for i = 1:length(RV)
     ind = RunRats(:,1) == RV(i); %Speed
-    SBAttempt(i) = sum(sum(RunStats(ind,24:25)));
+    SBAttempt(i) = sum(sum(RunStats(ind,19:20)));
     TimesOB(i) = sum(sum(RunStats(ind,[4,10:12]))); %Times on first
 end
 SBrate = SBAttempt./TimesOB;
@@ -86,8 +86,8 @@ endif
 SB = zeros(length(RV),1);
 for i = 1:length(RV)
     ind = RunRats(:,2) == RV(i); %STE
-    SB(i) = sum(RunStats(ind,24));
-    SBAttempt(i) = sum(sum(RunStats(ind,24:25))); %Sb Attempts
+    SB(i) = sum(RunStats(ind,19));
+    SBAttempt(i) = sum(sum(RunStats(ind,19:20))); %Sb Attempts
 end
 SBPct = SB./SBAttempt;
 valid = ~isnan(SBPct);
@@ -112,9 +112,9 @@ endif
 val2B = (1.068+.644+.305-.831 - .489 - .214)/3; %Value of a double versus a single (from run state matrix)
 val3B = (1.426+.865+.413-.831-.489-.214)/3; %Value of a triple versus a single (from run state matrix)
 valSB = 0.2;
-TimesOB = sum(RunStats(:,[4:6, 10:12]),2) - RunStats(:,25); %1B,2B,3B,BB,HBP,IBB,-CS
+TimesOB = sum(RunStats(:,[4:6, 10:12]),2) - RunStats(:,20); %1B,2B,3B,BB,HBP,IBB,-CS
 iOB = TimesOB > 0.25*max(TimesOB); %Limit players
-Runs = RunStats(iOB,9) - RunStats(iOB, 7) - val2B*RunStats(iOB, 5) - val3B*RunStats(iOB,6) - valSB*RunStats(iOB,24); %Runs-HR-runvalues of 2B,3B,SB
+Runs = RunStats(iOB,9) - RunStats(iOB, 7) - val2B*RunStats(iOB, 5) - val3B*RunStats(iOB,6) - valSB*RunStats(iOB,19); %Runs-HR-runvalues of 2B,3B,SB
 RpOB = Runs./TimesOB(iOB);
 
 RatMat = [RunRats(iOB,[1, 3]), ones(sum(iOB),1)];

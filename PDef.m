@@ -16,7 +16,7 @@ SBA = StatCalc(:,1)*Outs;
 wHold = -1*(OBAData(11)*SBA.*(StatCalc(:,2)) + OBAData(10)*SBA.*(1-StatCalc(:,2))); %Runs from stolen bases
 POut(:,5) = wHold/OBAData(13); %Convert runs to WAR
 
-[POut(:,6), CatchOut] = DefPred(PRat(:,4:7), Def, 0, 0, OBAData, SPIP, 0, 0, AvgRatings, 1, 0,false, 0); %Defensive calcs Pitcher
+POut(:,6) = DefPred(PRat(:,2:7), Def, 0, OBAData, SPIP, 0, 0, AvgRatings, 2, 0,false, 0); %Defensive calcs Pitcher (Start passing with 2 even tho ratings start at 4 to keep in line with subroutine format
 
 %Old Method
 %A2 = [PRat(:,4:7), PRat(:,4).*PRat(:,5), PRat(:,4).*PRat(:,7), ones(size(PRat,1),6)];
